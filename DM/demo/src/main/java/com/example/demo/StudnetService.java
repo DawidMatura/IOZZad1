@@ -1,19 +1,47 @@
 package com.example.demo;
 
 
+import com.example.demo.db.StudentRepository;
+import com.example.demo.db.StudentRow;
 import io.vavr.collection.List;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.stereotype.Service;
 
+import java.util.function.Function;
+
+@Service
 public class StudnetService {
-    private List<Student> students = List.empty();
+    private final StudentRepository repository;
+
+    public StudnetService(StudentRepository repo) {
+        this.repository = repo;
+    }
+
 
     List<Student> getStudents(){
-        return students;
+        return List.ofAll(this.repository.findAll())
+                .map(dbObj->
+                        new Student(
+                                dbObj.getId(),
+                                dbObj.getName(),
+                                dbObj.getNumber(),
+                                dbObj.getGroup1())
+                );
     }
-    Student addStudent(@RequestBody NewStudent student)
+    private Function<StudentRow, Student> getStudentRowStudentFunction() {
+        return dbObj->
+                new Student(
+                        dbObj.getId(),
+                        dbObj.getName(),
+                        dbObj.getNumber(),
+                        dbObj.getGroup1());
+    }
+    Student addStudent(final NewStudent student)
     {
-        Student created = new Student(students.size() + 1, student.Name, student.grupa, student.number);
-        students = students.prepend(created);
-        return created;
+
+        return getStudentRowStudentFunction().apply(this.repository.save(new StudentRow(
+                student.Name,
+                student.number,
+                student.grupa)));
+
     }
 }

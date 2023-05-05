@@ -1,24 +1,22 @@
 package com.example.demo;
 
-import ch.qos.logback.core.util.COWArrayList;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.awt.*;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController()
 @RequestMapping("/punkty")
 public class PunktyController {
 
-    private StudnetService service = new StudnetService();
+    private final StudnetService service;
 
-    public PunktyController() {
+
+    public PunktyController(StudnetService service) {
+        this.service = service;
     }
 
     @RequestMapping(value = "/students", method = RequestMethod.GET
